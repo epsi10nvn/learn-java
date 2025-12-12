@@ -6,7 +6,8 @@ public class Student {
     private LocalDate dateOfBirth; // sử dụng kiểu dữ liệu thời gian trong dự án
     private double averageGrade;
 
-    public Student() {}
+    public Student() {
+    }
 
     public Student(String studentId, String fullName, LocalDate dateOfBirth, double averageGrade) {
         this.studentId = studentId;
