@@ -5,6 +5,10 @@ import java.util.Scanner;
 public class InputUtils {
     private static Scanner scanner = new Scanner(System.in);
 
+    private InputUtils() {
+
+    }
+
     public static String nextLine(String msg) {
         System.out.print(msg);
         return scanner.nextLine();
