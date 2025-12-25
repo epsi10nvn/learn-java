@@ -4,9 +4,11 @@ import domain.Book;
 import domain.Ebook;
 import domain.LoanRecord;
 import domain.Member;
-import exception.custom_exception.BookNotFoundException;
-import exception.custom_exception.BorrowLimitExceededException;
-import exception.custom_exception.MemberNotFoundException;
+import exception.BookNotFoundException;
+import exception.BookOutOfStockException;
+import exception.BorrowLimitExceededException;
+import exception.LoanRecordNotFoundException;
+import exception.MemberNotFoundException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +20,9 @@ public class Library {
     private final List<LoanRecord> loans = new ArrayList<>();
     private final List<Member> members = new ArrayList<>();
 
-    private final int MAX_LOAN = 5;
+    private static final int MAX_LOAN = 5;
+    private static final int EBOOK_LOAN_DAYS = 30;
+    private static final int PRINTED_BOOK_LOAN_DAYS = 14;
 
     public void addMember(Member member) {
         members.add(member);
@@ -59,37 +63,38 @@ public class Library {
         books.remove(book);
     }
 
-    public void borrowBooks(String bookId, String memberId) throws Exception {
+    public void borrowBooks(String bookId, String memberId) 
+            throws BookNotFoundException, MemberNotFoundException, 
+                   BorrowLimitExceededException, BookOutOfStockException {
         Book book = searchBookById(bookId);
         Member member = searchMemberById(memberId);
 
-        long count = loans.stream()
-                .filter(loan -> loan.getMember().getMemberName().equalsIgnoreCase(memberId)
-                        && loan.getBook().getId().equals(bookId))
+        long currentBorrowedCount = loans.stream()
+                .filter(loan -> loan.getMember().getId().equals(memberId))
                 .count();
 
-
-        if (count >= MAX_LOAN) {
-            throw new BorrowLimitExceededException(memberId, (int) count, MAX_LOAN);
+        if (currentBorrowedCount >= MAX_LOAN) {
+            throw new BorrowLimitExceededException(memberId, currentBorrowedCount, MAX_LOAN);
         }
 
-        book.borrow();
+        book.borrow(); // Có thể throw BookOutOfStockException nếu là PrintedBook và hết sách
 
         LocalDate today = LocalDate.now();
-        LocalDate dueDate = today.plusDays(book instanceof Ebook ? 30 : 14);
+        LocalDate dueDate = today.plusDays(book instanceof Ebook ? EBOOK_LOAN_DAYS : PRINTED_BOOK_LOAN_DAYS);
 
         loans.add(new LoanRecord(member, book, today, dueDate));
     }
 
-    public void returnBooks(String bookId, String memberId) throws Exception {
+    public void returnBooks(String bookId, String memberId) 
+            throws BookNotFoundException, MemberNotFoundException, LoanRecordNotFoundException {
         Book book = searchBookById(bookId);
         Member member = searchMemberById(memberId);
 
         LoanRecord loanRecord = loans.stream()
-                .filter(loan -> loan.getMember().getId().equalsIgnoreCase(memberId)
+                .filter(loan -> loan.getMember().getId().equals(memberId)
                         && loan.getBook().getId().equals(bookId))
                 .findFirst()
-                .orElseThrow(() -> new Exception("No loan record found for member " + memberId + " and book " + bookId));
+                .orElseThrow(() -> new LoanRecordNotFoundException(bookId, memberId));
 
         book.returnBook();
         loans.remove(loanRecord);

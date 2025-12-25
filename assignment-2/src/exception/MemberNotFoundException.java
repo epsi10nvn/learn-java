@@ -1,6 +1,4 @@
-package exception.custom_exception;
-
-import exception.AppException;
+package exception;
 
 public class MemberNotFoundException extends AppException {
     private final String memberId;

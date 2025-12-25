@@ -16,6 +16,12 @@ public class Ebook extends Book {
             String format
     ) {
         super(isbn, title, author, publisher, publicationYear, category);
+        if (fileSizeMB <= 0) {
+            throw new IllegalArgumentException("File size must be greater than 0");
+        }
+        if (format == null || (!format.equalsIgnoreCase("PDF") && !format.equalsIgnoreCase("EPUB"))) {
+            throw new IllegalArgumentException("Format must be PDF or EPUB");
+        }
         this.fileSizeMB = fileSizeMB;
         this.format = format;
     }
@@ -46,12 +52,12 @@ public class Ebook extends Book {
 
     @Override
     public void borrow() {
-
+        // No state change needed
     }
 
     @Override
     public void returnBook() {
-
+        // No state change needed
     }
 
     public double getFileSizeMB() {

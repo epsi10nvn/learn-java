@@ -1,3 +1,6 @@
+import builder.EbookBuilder;
+import builder.MemberBuilder;
+import builder.PrintedBookBuilder;
 import domain.Ebook;
 import domain.Member;
 import domain.PrintedBook;
@@ -71,7 +74,10 @@ public class Main {
     private static void addMemberMenu(Library lib) {
         String memberName = InputUtils.nextLine("Member Name: ");
 
-        lib.addMember(new Member(memberName));
+        Member member = new MemberBuilder()
+                .memberName(memberName)
+                .build();
+        lib.addMember(member);
     }
 
     private static void addBookMenu(Library lib) {
@@ -89,12 +95,34 @@ public class Main {
         if (t == 1) {
             int totalCopies = InputUtils.nextInt("Stock: ");
             String shelfLocation = InputUtils.nextLine("Shelf location: ");
-            lib.addBook(new PrintedBook(isbn, title, author, pub, pubYear, category, totalCopies, shelfLocation));
+            
+            PrintedBook book = new PrintedBookBuilder()
+                    .isbn(isbn)
+                    .title(title)
+                    .author(author)
+                    .publisher(pub)
+                    .publicationYear(pubYear)
+                    .category(category)
+                    .totalCopies(totalCopies)
+                    .shelfLocation(shelfLocation)
+                    .build();
+            lib.addBook(book);
 
         } else {
             double size = InputUtils.nextDouble("File size: ");
             String format = InputUtils.nextLine("Format (PDF/EPUB): ");
-            lib.addBook(new Ebook(isbn, title, author, pub, pubYear, category, size, format));
+            
+            Ebook ebook = new EbookBuilder()
+                    .isbn(isbn)
+                    .title(title)
+                    .author(author)
+                    .publisher(pub)
+                    .publicationYear(pubYear)
+                    .category(category)
+                    .fileSizeMB(size)
+                    .format(format)
+                    .build();
+            lib.addBook(ebook);
         }
     }
 

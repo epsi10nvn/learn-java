@@ -58,6 +58,14 @@ public abstract class Book {
         return category;
     }
 
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public int getPublicationYear() {
+        return publicationYear;
+    }
+
     @Override
     public String toString() {
         return String.format(

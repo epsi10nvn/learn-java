@@ -1,6 +1,6 @@
 package domain;
 
-import exception.custom_exception.BookOutOfStockException;
+import exception.BookOutOfStockException;
 
 public class PrintedBook extends Book {
     private int totalCopies;
